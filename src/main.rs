@@ -1,9 +1,10 @@
 extern crate sdl2;
 
-use sdl2::pixels::Color;
-use std::thread;
-use std::time::Duration;
+mod phi;
+mod views;
 
+use sdl2::pixels::Color;
+use phi::Events;
 
 fn main() {
     // Initialize sdl2
@@ -19,12 +20,19 @@ fn main() {
         .accelerated()
         .build().unwrap();
 
-    // Render a ful black window
-    renderer.set_draw_color(Color::RGB(0,0,0));
-    renderer.clear();
-    renderer.present();
+    // Prepare the events record
+    let mut events = Events::new(sdl_context.event_pump().unwrap());
 
-    thread::sleep(Duration::from_millis(3000));
-    
-    println!("Hello, world!");
+    loop {
+        events.pump();
+        if events.now.quit || events.now.key_escape == Some(true) {
+            break;
+        }
+        // Render a ful black window
+        renderer.set_draw_color(Color::RGB(0,0,0));
+        renderer.clear();
+        renderer.present();
+    }
+    // thread::sleep(Duration::from_millis(3000));
+    // println!("Hello, world!");
 }
