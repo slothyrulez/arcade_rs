@@ -4,6 +4,7 @@
 // the compilation timeline.
 #[macro_use]
 mod events;
+pub mod data;
 
 use sdl2::render::Renderer;
 
@@ -17,6 +18,8 @@ struct_events! {
         key_escape: Escape,
         key_up: Up,
         key_down: Down,
+        key_left: Left,
+        key_right: Right,
         key_space: Space
     },
     else: {
@@ -29,6 +32,13 @@ struct_events! {
 pub struct Phi<'window> {
     pub events: Events,
     pub renderer: Renderer<'window>,
+}
+
+impl<'window> Phi<'window> {
+    pub fn output_size(&self) -> (f64, f64) {
+        let (w, h) = self.renderer.output_size().unwrap();
+        (w as f64, h as f64)
+    }
 }
 
 /// A `ViewAction` is a way for the currently executed view to
@@ -85,7 +95,7 @@ where F: Fn(&mut Phi) -> Box<View> {
 
     // Create the window
     let window = video.window("Arcade RS shooter", 800, 600)
-        .position_centered().opengl()
+        .position_centered().opengl().resizable()
         .build().unwrap();
 
     // Create the context
@@ -127,7 +137,7 @@ where F: Fn(&mut Phi) -> Box<View> {
         }
 
         // Logic && rendering
-        context.events.pump();
+        context.events.pump(&mut context.renderer);
 
         match current_view.render(&mut context, elapsed) {
             ViewAction::None => context.renderer.present(),

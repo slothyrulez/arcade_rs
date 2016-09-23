@@ -6,7 +6,7 @@ mod views;
 use phi::{Events, View, ViewAction, Phi};
 
 fn main() {
-    ::phi::spawn("Arcade RS shooter", |_| {
-        Box::new(::views::ViewA)
+    ::phi::spawn("Arcade RS shooter", |phi| {
+        Box::new(::views::ShipView::new(phi))
     });
 }
